@@ -1,0 +1,57 @@
+services:
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    container_name: monitoring-prometheus
+    restart: unless-stopped
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - /mnt/pinas2/monitoring-data/prometheus:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=15d'
+    ports:
+      - 9090:9090
+
+  node-exporter:
+    image: prom/node-exporter:v1.8.2
+    container_name: monitoring-node-exporter
+    restart: unless-stopped
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points=^/(dev|proc|sys|var/lib/docker/.+)($|/)'
+    network_mode: host
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    container_name: monitoring-grafana
+    restart: unless-stopped
+    volumes:
+      - /mnt/pinas2/monitoring-data/grafana:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    ports:
+      - 3001:3000
+
+  scrutiny:
+    image: ghcr.io/analogj/scrutiny:master-omnibus
+    container_name: monitoring-scrutiny
+    restart: unless-stopped
+    cap_add:
+      - SYS_RAWIO
+      - SYS_ADMIN
+    # Note: Using /dev/sd* for USB SSDs on Pi. 
+    # Check `lsblk` on the Pi to confirm if they are /dev/sda and /dev/sdb.
+    privileged: true
+    volumes:
+      - /run/udev:/run/udev:ro
+      - /mnt/pinas2/monitoring-data/scrutiny:/opt/scrutiny/config
+      - /dev:/dev:ro
+    ports:
+      - 8081:8080 # Web UI
+      - 8086:8086 # InfluxDB
