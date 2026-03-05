@@ -1,0 +1,17 @@
+# Custom Scrutiny Collector for Pi 5 (with smartmontools 7.4+)
+FROM ubuntu:24.10
+
+# Install smartmontools 7.4 and curl
+RUN apt-get update && apt-get install -y \
+    smartmontools \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Download Scrutiny collector binary
+RUN curl -L https://github.com/AnalogJ/scrutiny/releases/download/v0.8.2/scrutiny-collector-metrics-linux-arm64 -o /usr/local/bin/scrutiny-collector \
+    && chmod +x /usr/local/bin/scrutiny-collector
+
+# Copy the existing collector config
+# (We will mount it via docker-compose)
+
+ENTRYPOINT ["/usr/local/bin/scrutiny-collector", "run"]

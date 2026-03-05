@@ -56,3 +56,22 @@ services:
     ports:
       - 8081:8080 # Web UI
       - 8086:8086 # InfluxDB
+
+  # Pi 5 Host Collector (Sidecar) - Solves smartmontools 7.4+ requirement for SanDisk NVMe
+  scrutiny-collector:
+    build:
+      context: .
+      dockerfile: Dockerfile.collector
+    container_name: monitoring-scrutiny-collector
+    restart: "no" # Runs once on start, or can be crontab'd
+    privileged: true
+    cap_add:
+      - SYS_RAWIO
+      - SYS_ADMIN
+    environment:
+      - SCRUTINY_API_ENDPOINT=http://monitoring-scrutiny:8080
+    volumes:
+      - ./collector.yaml:/opt/scrutiny/config/collector.yaml:ro
+      - /dev:/dev:ro
+    depends_on:
+      - scrutiny
