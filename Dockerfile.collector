@@ -1,5 +1,5 @@
 # Custom Scrutiny Collector for Pi 5 (with smartmontools 7.4+)
-FROM ubuntu:24.10
+FROM ubuntu:24.04
 
 # Install smartmontools 7.4 and curl
 RUN apt-get update && apt-get install -y \
