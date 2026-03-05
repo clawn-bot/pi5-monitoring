@@ -1,0 +1,6 @@
+# Scrutiny Collector Configuration
+devices:
+  - device: /dev/sda
+    type: sat
+  - device: /dev/sdb
+    type: sat

@@ -51,6 +51,7 @@ services:
     volumes:
       - /run/udev:/run/udev:ro
       - /mnt/pinas2/monitoring-data/scrutiny:/opt/scrutiny/config
+      - ./collector.yaml:/opt/scrutiny/config/collector.yaml:ro
       - /dev:/dev:ro
     ports:
       - 8081:8080 # Web UI
