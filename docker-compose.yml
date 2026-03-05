@@ -45,9 +45,9 @@ services:
     cap_add:
       - SYS_RAWIO
       - SYS_ADMIN
-    # Note: Using /dev/sd* for USB SSDs on Pi. 
-    # Check `lsblk` on the Pi to confirm if they are /dev/sda and /dev/sdb.
     privileged: true
+    environment:
+      - SCRUTINY_COLLECTOR_DEVICES=/dev/sda,/dev/sdb
     volumes:
       - /run/udev:/run/udev:ro
       - /mnt/pinas2/monitoring-data/scrutiny:/opt/scrutiny/config
