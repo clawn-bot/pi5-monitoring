@@ -1,4 +1,3 @@
-# Scrutiny Collector Configuration
 devices:
   - device: /dev/sda
     type: sntasmedia
